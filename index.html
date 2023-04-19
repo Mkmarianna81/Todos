@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div class="banner"></div>
+    <header>
+      <h1>My todos</h1>
+    </header>
+    <main>
+      <div class="input-container">
+        <input type="text" placeholder="add new task..." id="descr" />
+        <i class="fa-solid fa-square-plus fa-2x" onclick="add()"></i>
+      </div>
+      <div class="todolist-container">
+        <div class="todos"></div>
+      </div>
+    </main>
+    
+    <script>
+          const delIcon='<i class="fa-solid fa-trash fa-2x" onclick="del(this)"></i>'
+          // const checkIkon='<i class="fa-regular fa-circle-check fa-2x" onclick="myToggle(this)"></i>'
+          const checkIkon=(cls='')=>`<i class="fa-regular fa-circle-check fa-2x ${cls}" onclick="myToggle(this)"></i>`
+
+          let myTodo=localStorage.getItem('myTodo') ? JSON.parse(localStorage['myTodo']) : [];
+          console.log(myTodo)
+
+          let todos=document.querySelector('.todos')
+
+          const renderTodoList=(arr)=>{
+                    todos.innerHTML='';
+                    arr.sort((obj1,obj2)=>obj2.id-obj1.id)
+                    arr.forEach(obj=>{
+                              console.log(obj)
+
+                              className1=obj.status ? 'done' : ''
+                              className2=obj.status ? 'green' : ''
+                              
+                    todos.innerHTML+=`<div id=${obj.id} class="todo-item">
+                              ${checkIkon(className2)}
+                              <span class=${className1}>${obj.descr}</span>
+                              ${delIcon}
+                              </div>`          
+                    })
+          }
+          //első látogatáskor lássuk a tartalmat:
+          renderTodoList(myTodo)
+
+          const add=()=>{
+                    let descr=document.getElementById('descr').value;
+                    if(descr.length==0)
+                    return
+                    let status=false
+                    let id=new Date().getTime();
+                    myTodo=[...myTodo,{id,descr,status}];
+                    renderTodoList(myTodo)
+                    localStorage['myTodo']=JSON.stringify(myTodo)
+                    document.getElementById('descr').value=''
+          }
+          const del=(domObj)=>{
+                    let id=domObj.parentNode.id
+                    console.log(id)
+                    myTodo=myTodo.filter(obj=>obj.id!=id)
+                    renderTodoList(myTodo)
+                    localStorage['myTodo']=JSON.stringify(myTodo)
+          }
+          const myToggle=(domObj)=>{
+                    let id=domObj.parentNode.id
+                    myTodo.forEach(obj=>{
+                              if(obj.id==id)
+                              obj.status=obj.status ? false : true
+                    })
+                    renderTodoList(myTodo)
+                    localStorage['myTodo']=JSON.stringify(myTodo)
+          }
+    </script>
+  </body>
+</html>
